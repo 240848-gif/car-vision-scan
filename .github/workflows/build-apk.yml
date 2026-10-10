@@ -31,7 +31,17 @@ jobs:
 
       - name: Build release APK
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon
+        run: |
+          set +e
+          ./gradlew assembleRelease --no-daemon > ../build.log 2>&1
+          code=$?
+          if [ $code -ne 0 ]; then
+            a=$(grep -nE "What went wrong|error:|FAILED|Could not|Execution failed|Unsupported|requires|Caused by" -A3 ../build.log | head -40 | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::error title=Gradle errors::$a"
+            b=$(tail -25 ../build.log | sed ':a;N;$!ba;s/\n/%0A/g')
+            echo "::warning title=Gradle log tail::$b"
+          fi
+          exit $code
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
