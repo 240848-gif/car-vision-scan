@@ -24,7 +24,8 @@
     "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.0"
+    "@babel/core": "^7.25.0",
+    "babel-preset-expo": "~57.0.14"
   },
   "private": true
 }
