@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Car Vision Scan",
+    "slug": "car-vision-scan",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#05070D",
+    "ios": {
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Car Vision Scan uses the camera to identify cars.",
+        "NSPhotoLibraryUsageDescription": "Car Vision Scan reads photos to identify cars."
+      },
+      "bundleIdentifier": "com.carvision.scan"
+    },
+    "android": {
+      "permissions": [
+        "CAMERA"
+      ],
+      "package": "com.carvision.scan"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Car Vision Scan to use the camera to identify cars."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Car Vision Scan to read photos to identify cars."
+        }
+      ]
+    ]
+  }
+}
