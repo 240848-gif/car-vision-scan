@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPO_PUBLIC_AI_API_KEY: ${{ secrets.EXPO_PUBLIC_AI_API_KEY }}
-      EXPO_PUBLIC_AI_MODEL: claude-haiku-5-5
+      EXPO_PUBLIC_AI_MODEL: gemini-3.6-flash
     steps:
       - uses: actions/checkout@v4
 

@@ -1,8 +1,9 @@
 import * as ImageManipulator from 'expo-image-manipulator';
 
 const API_KEY = process.env.EXPO_PUBLIC_AI_API_KEY;
-const ENDPOINT = process.env.EXPO_PUBLIC_AI_ENDPOINT || 'https://api.anthropic.com/v1/messages';
-const MODEL = process.env.EXPO_PUBLIC_AI_MODEL || 'claude-haiku-5-5';
+// Free Gemini API (get a key at aistudio.google.com). Model can be changed via env.
+const MODEL = process.env.EXPO_PUBLIC_AI_MODEL || 'gemini-3.6-flash';
+const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 const PROMPT = `You are an expert automotive identifier. Look at the image and identify the main car.
 Respond with ONLY a JSON object, no markdown, in this exact shape:
@@ -76,21 +77,22 @@ export async function recognizeCar(imageUri) {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
+        'x-goog-api-key': API_KEY,
       },
       body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 700,
-        messages: [
+        contents: [
           {
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
-              { type: 'text', text: PROMPT },
+            parts: [
+              { inline_data: { mime_type: 'image/jpeg', data: base64 } },
+              { text: PROMPT },
             ],
           },
         ],
+        generationConfig: {
+          responseMimeType: 'application/json',
+          maxOutputTokens: 1200,
+          temperature: 0.2,
+        },
       }),
     });
   } catch (e) {
@@ -103,7 +105,9 @@ export async function recognizeCar(imageUri) {
   }
 
   const data = await res.json();
-  const text = (data.content || []).map((c) => c.text || '').join('');
+  const parts = data?.candidates?.[0]?.content?.parts || [];
+  const text = parts.map((c) => c.text || '').join('');
+  if (!text) throw new Error('The AI returned no answer. Try another photo.');
   const p = parseJson(text);
 
   return {
